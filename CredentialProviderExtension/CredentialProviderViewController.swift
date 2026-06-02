@@ -1,12 +1,21 @@
 #if canImport(AppKit) && canImport(AuthenticationServices)
 import AppKit
 import AuthenticationServices
+import Foundation
 
 final class CredentialProviderViewController: ASCredentialProviderViewController {
-    private let demoCredential = ASPasswordCredential(user: "demo@example.com", password: "demo-password")
+    private enum DemoSpectreConfiguration {
+        static let userName = "Robert Lee Mitchell"
+        static let userSecret = "banana colored duckling"
+        static let fallbackSite = "twitter.com"
+        static let fallbackUser = "demo@example.com"
+    }
+
+    private var pendingUser = DemoSpectreConfiguration.fallbackUser
+    private var pendingServiceIdentifier = DemoSpectreConfiguration.fallbackSite
 
     private lazy var statusLabel: NSTextField = {
-        let label = NSTextField(labelWithString: "Select Continue to return a demo credential.")
+        let label = NSTextField(labelWithString: "Select Continue to return a Spectre-derived demo credential.")
         label.lineBreakMode = .byWordWrapping
         label.maximumNumberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -42,24 +51,33 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
         let summary = serviceIdentifiers.map(\.identifier).joined(separator: ", ")
         statusLabel.stringValue = summary.isEmpty
-            ? "Select Continue to return the bundled demo credential."
-            : "Select Continue to return a demo credential for: \(summary)"
+            ? "Select Continue to return the bundled Spectre-derived credential."
+            : "Select Continue to return a Spectre-derived credential for: \(summary)"
     }
 
     override func provideCredentialWithoutUserInteraction(for credentialRequest: any ASCredentialRequest) {
-        let requestedUser = credentialRequest.credentialIdentity.user
-        let credential = requestedUser.isEmpty
-            ? demoCredential
-            : ASPasswordCredential(user: requestedUser, password: demoCredential.password)
+        pendingUser = credentialRequest.credentialIdentity.user.isEmpty
+            ? DemoSpectreConfiguration.fallbackUser
+            : credentialRequest.credentialIdentity.user
+        pendingServiceIdentifier = normalizedSiteName(from: credentialRequest.credentialIdentity.serviceIdentifier.identifier)
 
-        extensionContext.completeRequest(withSelectedCredential: credential, completionHandler: nil)
+        do {
+            let credential = try makeDemoCredential()
+            extensionContext.completeRequest(withSelectedCredential: credential, completionHandler: nil)
+        } catch {
+            extensionContext.cancelRequest(withError: error)
+        }
     }
 
     override func prepareInterfaceToProvideCredential(for credentialRequest: any ASCredentialRequest) {
         let identifier = credentialRequest.credentialIdentity.serviceIdentifier.identifier
+        pendingUser = credentialRequest.credentialIdentity.user.isEmpty
+            ? DemoSpectreConfiguration.fallbackUser
+            : credentialRequest.credentialIdentity.user
+        pendingServiceIdentifier = normalizedSiteName(from: identifier)
         statusLabel.stringValue = identifier.isEmpty
-            ? "Select Continue to finish providing the demo credential."
-            : "Select Continue to provide a demo credential for: \(identifier)"
+            ? "Select Continue to finish providing the Spectre-derived credential."
+            : "Select Continue to provide a Spectre-derived credential for: \(identifier)"
     }
 
     override func prepareInterfaceForExtensionConfiguration() {
@@ -68,7 +86,33 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
 
     @objc
     private func completeWithDemoCredential() {
-        extensionContext.completeRequest(withSelectedCredential: demoCredential, completionHandler: nil)
+        do {
+            let credential = try makeDemoCredential()
+            extensionContext.completeRequest(withSelectedCredential: credential, completionHandler: nil)
+        } catch {
+            extensionContext.cancelRequest(withError: error)
+        }
+    }
+
+    private func makeDemoCredential() throws -> ASPasswordCredential {
+        let password = try SpectreAlgorithm.password(
+            for: SpectreConfiguration(
+                userName: DemoSpectreConfiguration.userName,
+                userSecret: DemoSpectreConfiguration.userSecret,
+                siteName: pendingServiceIdentifier,
+                resultType: .long
+            )
+        )
+
+        return ASPasswordCredential(user: pendingUser, password: password)
+    }
+
+    private func normalizedSiteName(from identifier: String) -> String {
+        if let host = URL(string: identifier)?.host, !host.isEmpty {
+            return host
+        }
+
+        return identifier.isEmpty ? DemoSpectreConfiguration.fallbackSite : identifier
     }
 }
 #endif
