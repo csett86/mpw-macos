@@ -97,6 +97,15 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         return button
     }()
 
+    private lazy var cancelButton: NSButton = {
+        let button = NSButton(title: "Cancel", target: self, action: #selector(cancelCredentialRequest))
+        button.bezelStyle = .rounded
+        button.keyEquivalent = "\u{1b}"
+        button.keyEquivalentModifierMask = []
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
     override func loadView() {
         let view = NSView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -109,6 +118,7 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         view.addSubview(userSecretField)
         view.addSubview(loginNameLabel)
         view.addSubview(loginNameField)
+        view.addSubview(cancelButton)
         view.addSubview(continueButton)
 
         NSLayoutConstraint.activate([
@@ -135,8 +145,10 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
             loginNameField.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 6),
             loginNameField.leadingAnchor.constraint(equalTo: statusLabel.leadingAnchor),
             loginNameField.trailingAnchor.constraint(equalTo: statusLabel.trailingAnchor),
+            cancelButton.topAnchor.constraint(equalTo: loginNameField.bottomAnchor, constant: 16),
+            cancelButton.leadingAnchor.constraint(equalTo: statusLabel.leadingAnchor),
             continueButton.topAnchor.constraint(equalTo: loginNameField.bottomAnchor, constant: 16),
-            continueButton.leadingAnchor.constraint(equalTo: statusLabel.leadingAnchor),
+            continueButton.leadingAnchor.constraint(equalTo: cancelButton.trailingAnchor, constant: 8),
             continueButton.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor, constant: -24)
         ])
 
@@ -187,6 +199,10 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         extensionContext.completeExtensionConfigurationRequest()
     }
 
+    override func cancelOperation(_ sender: Any?) {
+        cancelCredentialRequest()
+    }
+
     @objc
     private func completeWithCredential() {
         do {
@@ -195,6 +211,12 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         } catch {
             extensionContext.cancelRequest(withError: error)
         }
+    }
+
+    @objc
+    private func cancelCredentialRequest() {
+        let error = NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue)
+        extensionContext.cancelRequest(withError: error)
     }
 
     private func makeCredential() throws -> ASPasswordCredential {
