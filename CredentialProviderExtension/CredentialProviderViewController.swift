@@ -30,6 +30,7 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
 
     private var pendingServiceIdentifier: String?
 
+    #if canImport(AppKit)
     private lazy var statusLabel: NSTextField = {
         let label = NSTextField(labelWithString: "Enter your Spectre user name and secret, then select Continue.")
         label.lineBreakMode = .byWordWrapping
@@ -111,8 +112,66 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    #elseif canImport(UIKit)
+    private lazy var statusLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Enter your Spectre user name and secret, then select Continue."
+        label.numberOfLines = 0
+        return label
+    }()
+
+    private lazy var siteField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "example.com"
+        field.borderStyle = .roundedRect
+        field.autocorrectionType = .no
+        field.autocapitalizationType = .none
+        return field
+    }()
+
+    private lazy var userNameField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Your Full Name"
+        field.borderStyle = .roundedRect
+        field.autocorrectionType = .no
+        return field
+    }()
+
+    private lazy var userSecretField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Required"
+        field.borderStyle = .roundedRect
+        field.isSecureTextEntry = true
+        return field
+    }()
+
+    private lazy var loginNameField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "name@example.com"
+        field.borderStyle = .roundedRect
+        field.autocorrectionType = .no
+        field.autocapitalizationType = .none
+        field.keyboardType = .emailAddress
+        return field
+    }()
+
+    private lazy var continueButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Continue", for: .normal)
+        button.addTarget(self, action: #selector(completeWithCredential), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Cancel", for: .normal)
+        button.addTarget(self, action: #selector(cancelCredentialRequest), for: .touchUpInside)
+        return button
+    }()
+    #endif
 
     override func loadView() {
+        #if canImport(AppKit)
         let view = NSView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(statusLabel)
@@ -160,6 +219,32 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
 
         self.view = view
         preferredContentSize = NSSize(width: 440, height: 360)
+        #elseif canImport(UIKit)
+        let view = UIView()
+        view.backgroundColor = .systemBackground
+
+        let stack = UIStackView(arrangedSubviews: [
+            statusLabel,
+            labeledFieldStack(title: "Site", field: siteField),
+            labeledFieldStack(title: "User name", field: userNameField),
+            labeledFieldStack(title: "User Master Password", field: userSecretField),
+            labeledFieldStack(title: "Login name", field: loginNameField),
+            buttonRow()
+        ])
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            stack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            stack.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        ])
+
+        self.view = view
+        #endif
     }
 
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
@@ -169,11 +254,11 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
             .first
         updateSiteUI()
 
-        statusLabel.stringValue = "Enter your Spectre details to generate a credential for: \(pendingServiceIdentifier ?? "N/A")"
+        setStatusText("Enter your Spectre details to generate a credential for: \(pendingServiceIdentifier ?? "N/A")")
     }
 
     override func provideCredentialWithoutUserInteraction(for credentialRequest: any ASCredentialRequest) {
-        // Prompting for the Master Password parameters requires rendering the extension UI.
+        // Prompting for the master password parameters requires rendering the extension UI.
         let error = NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userInteractionRequired.rawValue)
         extensionContext.cancelRequest(withError: error)
     }
@@ -187,9 +272,11 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         extensionContext.completeExtensionConfigurationRequest()
     }
 
+    #if canImport(AppKit)
     override func cancelOperation(_ sender: Any?) {
         cancelCredentialRequest()
     }
+    #endif
 
     @objc
     private func completeWithCredential() {
@@ -208,22 +295,22 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     }
 
     private func makeCredential() throws -> ASPasswordCredential {
-        let userName = userNameField.stringValue
+        let userName = userNameValue
         guard !userName.isEmpty else {
             throw ProviderError.missingUserName
         }
 
-        let userSecret = userSecretField.stringValue
+        let userSecret = userSecretValue
         guard !userSecret.isEmpty else {
             throw ProviderError.missingUserSecret
         }
 
-        let siteName = siteField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let siteName = siteValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !siteName.isEmpty else {
             throw ProviderError.missingSite
         }
 
-        let loginName = loginNameField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let loginName = loginNameValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !loginName.isEmpty else {
             throw ProviderError.missingLoginName
         }
@@ -254,6 +341,49 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     }
 
     private func updateSiteUI() {
+        #if canImport(AppKit)
         siteField.stringValue = pendingServiceIdentifier ?? ""
+        #elseif canImport(UIKit)
+        siteField.text = pendingServiceIdentifier ?? ""
+        #endif
     }
+
+    private func setStatusText(_ text: String) {
+        #if canImport(AppKit)
+        statusLabel.stringValue = text
+        #elseif canImport(UIKit)
+        statusLabel.text = text
+        #endif
+    }
+
+    #if canImport(AppKit)
+    private var userNameValue: String { userNameField.stringValue }
+    private var userSecretValue: String { userSecretField.stringValue }
+    private var siteValue: String { siteField.stringValue }
+    private var loginNameValue: String { loginNameField.stringValue }
+    #elseif canImport(UIKit)
+    private var userNameValue: String { userNameField.text ?? "" }
+    private var userSecretValue: String { userSecretField.text ?? "" }
+    private var siteValue: String { siteField.text ?? "" }
+    private var loginNameValue: String { loginNameField.text ?? "" }
+
+    private func labeledFieldStack(title: String, field: UITextField) -> UIStackView {
+        let label = UILabel()
+        label.text = title
+        label.font = .preferredFont(forTextStyle: .subheadline)
+
+        let stack = UIStackView(arrangedSubviews: [label, field])
+        stack.axis = .vertical
+        stack.spacing = 6
+        return stack
+    }
+
+    private func buttonRow() -> UIStackView {
+        let stack = UIStackView(arrangedSubviews: [cancelButton, continueButton])
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.alignment = .leading
+        return stack
+    }
+    #endif
 }
