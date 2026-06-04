@@ -258,6 +258,7 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     }
 
     override func provideCredentialWithoutUserInteraction(for credentialRequest: any ASCredentialRequest) {
+        // Prompting for the master password parameters requires rendering the extension UI.
         let error = NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userInteractionRequired.rawValue)
         extensionContext.cancelRequest(withError: error)
     }

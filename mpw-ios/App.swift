@@ -16,7 +16,7 @@ private struct ContentView: View {
                 .font(.title2)
                 .bold()
 
-            Text("This sample iOS app bundles the credential provider extension used by the macOS host app.")
+            Text("This sample iOS app bundles the credential provider extension shared with the macOS host app.")
                 .fixedSize(horizontal: false, vertical: true)
 
             Text("Install and enable the credential provider from iOS Settings → Passwords → Password Options.")
