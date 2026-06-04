@@ -5,7 +5,7 @@ let package = Package(
     name: "SpectreCore",
     platforms: [
         .macOS(.v14),
-        .iOS(.v13)
+        .iOS(.v16)
     ],
     products: [
         .library(name: "SpectreCore", targets: ["SpectreCore"])
