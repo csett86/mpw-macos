@@ -301,7 +301,8 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
             labeledFieldStack(title: "Login name", field: loginNameField),
             labeledFieldStack(title: "Counter", field: counterField),
             labeledResultTypeStack(title: "Result type"),
-            buttonRow()
+            cancelButton,
+            continueButton
         ])
         stack.axis = .vertical
         stack.spacing = 12
@@ -458,9 +459,10 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     private var siteValue: String { siteField.text ?? "" }
     private var loginNameValue: String { loginNameField.text ?? "" }
     private var counterValue: UInt32 {
-        let trimmed = (counterField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let parsed = UInt32(trimmed), parsed > 0 else {
-            throw ProviderError.invalidCounter
+        let trimmed = (counterField.text ?? "1").trimmingCharacters(in: .whitespacesAndNewlines)
+        var parsed = (UInt32(trimmed) ?? 1)
+        if parsed < 1 {
+            parsed = 1
         }
         return parsed
     }
@@ -509,13 +511,6 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         })
     }
 
-    private func buttonRow() -> UIStackView {
-        let stack = UIStackView(arrangedSubviews: [cancelButton, continueButton])
-        stack.axis = .horizontal
-        stack.spacing = 12
-        stack.alignment = .leading
-        return stack
-    }
     #endif
 
     private static func resultTypeTitle(_ resultType: SpectreResultType) -> String {
