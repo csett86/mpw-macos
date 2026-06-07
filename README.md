@@ -2,6 +2,8 @@
 
 The Master Password algorithm as AuthenticationServices credential provider extension for macOS and iOS, implemented in pure Swift.
 
+The awesome [Master Password algorithm](https://spectre.app/spectre-algorithm.pdf) was created by Maarten Billemont under GPLv3, this would not be possible without! See more of him at https://spectre.app/
+
 ## Project contents
 
 - `mpw-swift` macOS host app target
