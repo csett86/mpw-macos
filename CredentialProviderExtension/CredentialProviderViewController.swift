@@ -232,11 +232,13 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         if #available(iOS 26, *) {
             var config = UIButton.Configuration.prominentGlass()
             config.image = UIImage(systemName: "checkmark")
+            config.buttonSize = .large
             button = UIButton(configuration: config, primaryAction: nil)
         } else {
             var config = UIButton.Configuration.tinted()
             config.image = UIImage(systemName: "checkmark")
             config.cornerStyle = .capsule
+            config.buttonSize = .large
             button = UIButton(configuration: config, primaryAction: nil)
         }
         button.addTarget(self, action: #selector(completeWithCredential), for: .touchUpInside)
@@ -252,6 +254,7 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         }
         config.image = UIImage(systemName: "xmark")
         config.cornerStyle = .capsule
+        config.buttonSize = .large
         let button = UIButton(configuration: config, primaryAction: nil)
         button.addTarget(self, action: #selector(cancelCredentialRequest), for: .touchUpInside)
         return button
