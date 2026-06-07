@@ -151,22 +151,16 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         let label = UILabel()
         label.text = "Enter your Spectre user name and secret, then select Continue."
         label.numberOfLines = 0
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = .secondaryLabel
         return label
-    }()
-
-    private lazy var siteField: UITextField = {
-        let field = UITextField()
-        field.placeholder = "example.com"
-        field.borderStyle = .roundedRect
-        field.autocorrectionType = .no
-        field.autocapitalizationType = .none
-        return field
     }()
 
     private lazy var userNameField: UITextField = {
         let field = UITextField()
         field.placeholder = "Your Full Name"
-        field.borderStyle = .roundedRect
+        field.borderStyle = .none
+        field.textAlignment = .right
         field.autocorrectionType = .no
         return field
     }()
@@ -174,28 +168,49 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     private lazy var userSecretField: UITextField = {
         let field = UITextField()
         field.placeholder = "Required"
-        field.borderStyle = .roundedRect
+        field.borderStyle = .none
+        field.textAlignment = .right
         field.isSecureTextEntry = true
+        return field
+    }()
+
+    private lazy var siteField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "example.com"
+        field.borderStyle = .none
+        field.textAlignment = .right
+        field.autocorrectionType = .no
+        field.autocapitalizationType = .none
         return field
     }()
 
     private lazy var loginNameField: UITextField = {
         let field = UITextField()
         field.placeholder = "name@example.com"
-        field.borderStyle = .roundedRect
+        field.borderStyle = .none
+        field.textAlignment = .right
         field.autocorrectionType = .no
         field.autocapitalizationType = .none
         field.keyboardType = .emailAddress
         return field
     }()
 
-    private lazy var counterField: UITextField = {
-        let field = UITextField()
-        field.placeholder = "1"
-        field.text = "1"
-        field.borderStyle = .roundedRect
-        field.keyboardType = .numberPad
-        return field
+    private var counter: Int = 1
+
+    private lazy var counterStepper: UIStepper = {
+        let stepper = UIStepper()
+        stepper.minimumValue = 1
+        stepper.maximumValue = Double(UInt32.max)
+        stepper.value = 1
+        stepper.addTarget(self, action: #selector(counterStepperChanged), for: .valueChanged)
+        return stepper
+    }()
+
+    private lazy var counterDisplayLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Counter: 1"
+        label.font = .preferredFont(forTextStyle: .body)
+        return label
     }()
 
     private var selectedResultType: SpectreResultType = .long
@@ -203,27 +218,55 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     private lazy var resultTypeButton: UIButton = {
         let button = UIButton(type: .system)
         var configuration = UIButton.Configuration.plain()
-        configuration.titleAlignment = .leading
+        configuration.titleAlignment = .trailing
+        configuration.contentInsets = .zero
         button.configuration = configuration
-        button.contentHorizontalAlignment = .leading
+        button.contentHorizontalAlignment = .trailing
         button.showsMenuAsPrimaryAction = true
         refreshResultTypeButton(button)
         return button
     }()
 
     private lazy var continueButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Continue", for: .normal)
+        var button: UIButton
+        if #available(iOS 26, *) {
+            var config = UIButton.Configuration.prominentGlass()
+            config.image = UIImage(systemName: "checkmark")
+            button = UIButton(configuration: config, primaryAction: nil)
+        } else {
+            var config = UIButton.Configuration.tinted()
+            config.image = UIImage(systemName: "checkmark")
+            config.cornerStyle = .capsule
+            button = UIButton(configuration: config, primaryAction: nil)
+        }
         button.addTarget(self, action: #selector(completeWithCredential), for: .touchUpInside)
         return button
     }()
 
     private lazy var cancelButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Cancel", for: .normal)
+        var config: UIButton.Configuration
+        if #available(iOS 26, *) {
+            config = UIButton.Configuration.glass()
+        } else {
+            config = UIButton.Configuration.bordered()
+        }
+        config.image = UIImage(systemName: "xmark")
+        config.cornerStyle = .capsule
+        let button = UIButton(configuration: config, primaryAction: nil)
         button.addTarget(self, action: #selector(cancelCredentialRequest), for: .touchUpInside)
         return button
     }()
+
+    private lazy var formTableView: UITableView = {
+        let table = UITableView(frame: .zero, style: .insetGrouped)
+        table.dataSource = self
+        table.delegate = self
+        table.translatesAutoresizingMaskIntoConstraints = false
+        table.keyboardDismissMode = .onDrag
+        return table
+    }()
+
+    private var cachedFormCells: [Int: UITableViewCell] = [:]
     #endif
 
     override func loadView() {
@@ -291,29 +334,25 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         preferredContentSize = NSSize(width: 440, height: 425)
         #elseif canImport(UIKit)
         let view = UIView()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
 
-        let stack = UIStackView(arrangedSubviews: [
-            statusLabel,
-            labeledFieldStack(title: "User name", field: userNameField),
-            labeledFieldStack(title: "User Master Password", field: userSecretField),
-            labeledFieldStack(title: "Site", field: siteField),
-            labeledFieldStack(title: "Login name", field: loginNameField),
-            labeledFieldStack(title: "Counter", field: counterField),
-            labeledResultTypeStack(title: "Result type"),
-            cancelButton,
-            continueButton
-        ])
-        stack.axis = .vertical
-        stack.spacing = 12
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        let spacer = UIView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        let buttonBar = UIStackView(arrangedSubviews: [cancelButton, spacer, continueButton])
+        buttonBar.axis = .horizontal
+        buttonBar.translatesAutoresizingMaskIntoConstraints = false
 
-        view.addSubview(stack)
+        view.addSubview(buttonBar)
+        view.addSubview(formTableView)
+
         NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            stack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            stack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            stack.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            buttonBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+            buttonBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            buttonBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            formTableView.topAnchor.constraint(equalTo: buttonBar.bottomAnchor, constant: 12),
+            formTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            formTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            formTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
         self.view = view
@@ -326,8 +365,6 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
             .compactMap { self.normalizedSiteName(from: $0.identifier) }
             .first
         updateSiteUI()
-
-        setStatusText("Enter your Spectre details to generate a credential for: \(pendingServiceIdentifier ?? "N/A")")
     }
 
     override func provideCredentialWithoutUserInteraction(for credentialRequest: any ASCredentialRequest) {
@@ -366,6 +403,14 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         let error = NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue)
         extensionContext.cancelRequest(withError: error)
     }
+
+    #if canImport(UIKit)
+    @objc
+    private func counterStepperChanged() {
+        counter = Int(counterStepper.value)
+        counterDisplayLabel.text = "Counter: \(counter)"
+    }
+    #endif
 
     private func makeCredential() throws -> ASPasswordCredential {
         let userName = userNameValue
@@ -458,38 +503,8 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     private var userSecretValue: String { userSecretField.text ?? "" }
     private var siteValue: String { siteField.text ?? "" }
     private var loginNameValue: String { loginNameField.text ?? "" }
-    private var counterValue: UInt32 {
-        let trimmed = (counterField.text ?? "1").trimmingCharacters(in: .whitespacesAndNewlines)
-        var parsed = (UInt32(trimmed) ?? 1)
-        if parsed < 1 {
-            parsed = 1
-        }
-        return parsed
-    }
-
+    private var counterValue: UInt32 { UInt32(max(1, counter)) }
     private var selectedResultTypeValue: SpectreResultType { selectedResultType }
-
-    private func labeledFieldStack(title: String, field: UITextField) -> UIStackView {
-        let label = UILabel()
-        label.text = title
-        label.font = .preferredFont(forTextStyle: .subheadline)
-
-        let stack = UIStackView(arrangedSubviews: [label, field])
-        stack.axis = .vertical
-        stack.spacing = 6
-        return stack
-    }
-
-    private func labeledResultTypeStack(title: String) -> UIStackView {
-        let label = UILabel()
-        label.text = title
-        label.font = .preferredFont(forTextStyle: .subheadline)
-
-        let stack = UIStackView(arrangedSubviews: [label, resultTypeButton])
-        stack.axis = .vertical
-        stack.spacing = 6
-        return stack
-    }
 
     private func refreshResultTypeButton(_ button: UIButton? = nil) {
         let targetButton = button ?? resultTypeButton
@@ -534,3 +549,133 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         }
     }
 }
+
+#if canImport(UIKit)
+extension CredentialProviderViewController: UITableViewDataSource, UITableViewDelegate {
+    private enum FormRow: Int, CaseIterable {
+        case userName, userSecret, site, login, complexity, counter
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        FormRow.allCases.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cached = cachedFormCells[indexPath.row] {
+            return cached
+        }
+        let cell = makeFormCell(for: indexPath.row)
+        cachedFormCells[indexPath.row] = cell
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        switch FormRow(rawValue: indexPath.row) {
+        case .userName: userNameField.becomeFirstResponder()
+        case .userSecret: userSecretField.becomeFirstResponder()
+        case .site: siteField.becomeFirstResponder()
+        case .login: loginNameField.becomeFirstResponder()
+        default: break
+        }
+    }
+
+    private func makeFormCell(for row: Int) -> UITableViewCell {
+        switch FormRow(rawValue: row) {
+        case .userName:
+            return configureFieldCell(label: "User Name", field: userNameField)
+        case .userSecret:
+            return configureFieldCell(label: "User Master Password", field: userSecretField)
+        case .site:
+            return configureFieldCell(label: "Site", field: siteField)
+        case .login:
+            return configureFieldCell(label: "Login", field: loginNameField)
+        case .complexity:
+            return configureMenuButtonCell(label: "Complexity", button: resultTypeButton)
+        case .counter:
+            return configureStepperCell()
+        case .none:
+            return UITableViewCell()
+        }
+    }
+
+    private func configureFieldCell(label: String, field: UITextField) -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.selectionStyle = .default
+
+        let titleLabel = UILabel()
+        titleLabel.text = label
+        titleLabel.font = .preferredFont(forTextStyle: .body)
+        titleLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        field.textAlignment = .right
+        field.translatesAutoresizingMaskIntoConstraints = false
+
+        let stack = UIStackView(arrangedSubviews: [titleLabel, field])
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        cell.contentView.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 12),
+            stack.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -12),
+            stack.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
+        ])
+        return cell
+    }
+
+    private func configureMenuButtonCell(label: String, button: UIButton) -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.selectionStyle = .none
+
+        let titleLabel = UILabel()
+        titleLabel.text = label
+        titleLabel.font = .preferredFont(forTextStyle: .body)
+        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        button.translatesAutoresizingMaskIntoConstraints = false
+
+        cell.contentView.addSubview(titleLabel)
+        cell.contentView.addSubview(button)
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+            titleLabel.topAnchor.constraint(greaterThanOrEqualTo: cell.contentView.topAnchor, constant: 12),
+            titleLabel.bottomAnchor.constraint(lessThanOrEqualTo: cell.contentView.bottomAnchor, constant: -12),
+            button.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
+            button.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+            button.leadingAnchor.constraint(greaterThanOrEqualTo: titleLabel.trailingAnchor, constant: 8),
+            button.topAnchor.constraint(greaterThanOrEqualTo: cell.contentView.topAnchor, constant: 12),
+            button.bottomAnchor.constraint(lessThanOrEqualTo: cell.contentView.bottomAnchor, constant: -12),
+        ])
+        return cell
+    }
+
+    private func configureStepperCell() -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.selectionStyle = .none
+
+        counterDisplayLabel.translatesAutoresizingMaskIntoConstraints = false
+        counterStepper.translatesAutoresizingMaskIntoConstraints = false
+
+        cell.contentView.addSubview(counterDisplayLabel)
+        cell.contentView.addSubview(counterStepper)
+        NSLayoutConstraint.activate([
+            counterDisplayLabel.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
+            counterDisplayLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+            counterDisplayLabel.topAnchor.constraint(greaterThanOrEqualTo: cell.contentView.topAnchor, constant: 12),
+            counterDisplayLabel.bottomAnchor.constraint(lessThanOrEqualTo: cell.contentView.bottomAnchor, constant: -12),
+            counterStepper.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
+            counterStepper.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+            counterStepper.topAnchor.constraint(greaterThanOrEqualTo: cell.contentView.topAnchor, constant: 12),
+            counterStepper.bottomAnchor.constraint(lessThanOrEqualTo: cell.contentView.bottomAnchor, constant: -12),
+        ])
+        return cell
+    }
+}
+#endif
