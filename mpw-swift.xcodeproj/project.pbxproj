@@ -63,11 +63,11 @@
 /* Begin PBXFileReference section */
 		A00100020000000000000001 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		A00100020000000000000002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A00100020000000000000003 /* mpw-macos.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mpw-macos.entitlements"; sourceTree = "<group>"; };
+		A00100020000000000000003 /* mpw-swift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "mpw-swift.entitlements"; sourceTree = "<group>"; };
 		A00100020000000000000004 /* CredentialProviderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialProviderViewController.swift; sourceTree = "<group>"; };
 		A00100020000000000000005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A00100020000000000000006 /* CredentialProviderExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CredentialProviderExtension.entitlements; sourceTree = "<group>"; };
-		A00100020000000000000007 /* mpw-macos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mpw-macos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00100020000000000000007 /* mpw-swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mpw-swift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00100020000000000000008 /* CredentialProviderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CredentialProviderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00100020000000000000009 /* SpectreAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectreAlgorithm.swift; sourceTree = "<group>"; };
 		A0010002000000000000000A /* SpectreTemplates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectreTemplates.swift; sourceTree = "<group>"; };
@@ -116,7 +116,7 @@
 		A00100080000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				A00100080000000000000002 /* mpw-macos */,
+				A00100080000000000000002 /* mpw-swift */,
 				A00100080000000000000003 /* CredentialProviderExtension */,
 				A00100080000000000000005 /* mpw-ios */,
 				839E66392FD091270029A413 /* Frameworks */,
@@ -124,15 +124,15 @@
 			);
 			sourceTree = "<group>";
 		};
-		A00100080000000000000002 /* mpw-macos */ = {
+		A00100080000000000000002 /* mpw-swift */ = {
 			isa = PBXGroup;
 			children = (
 				A00100020000000000000001 /* App.swift */,
 				A00100020000000000000002 /* Info.plist */,
-				A00100020000000000000003 /* mpw-macos.entitlements */,
+				A00100020000000000000003 /* mpw-swift.entitlements */,
 				A0010002000000000000000F /* Assets.xcassets */,
 			);
-			path = "mpw-macos";
+			path = "mpw-swift";
 			sourceTree = "<group>";
 		};
 		A00100080000000000000003 /* CredentialProviderExtension */ = {
@@ -150,7 +150,7 @@
 		A00100080000000000000004 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A00100020000000000000007 /* mpw-macos.app */,
+				A00100020000000000000007 /* mpw-swift.app */,
 				A00100020000000000000008 /* CredentialProviderExtension.appex */,
 				A0010002000000000000000E /* mpw-ios.app */,
 			);
@@ -171,9 +171,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A00100050000000000000001 /* mpw-macos */ = {
+		A00100050000000000000001 /* mpw-swift */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A00100090000000000000001 /* Build configuration list for PBXNativeTarget "mpw-macos" */;
+			buildConfigurationList = A00100090000000000000001 /* Build configuration list for PBXNativeTarget "mpw-swift" */;
 			buildPhases = (
 				A00100100000000000000001 /* Sources */,
 				A00100070000000000000001 /* Frameworks */,
@@ -185,9 +185,9 @@
 			dependencies = (
 				A00100110000000000000001 /* PBXTargetDependency */,
 			);
-			name = "mpw-macos";
-			productName = "mpw-macos";
-			productReference = A00100020000000000000007 /* mpw-macos.app */;
+			name = "mpw-swift";
+			productName = "mpw-swift";
+			productReference = A00100020000000000000007 /* mpw-swift.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A00100050000000000000002 /* CredentialProviderExtension */ = {
@@ -246,7 +246,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A00100090000000000000003 /* Build configuration list for PBXProject "mpw-macos" */;
+			buildConfigurationList = A00100090000000000000003 /* Build configuration list for PBXProject "mpw-swift" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -262,7 +262,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A00100050000000000000001 /* mpw-macos */,
+				A00100050000000000000001 /* mpw-swift */,
 				A00100050000000000000002 /* CredentialProviderExtension */,
 				A00100050000000000000003 /* mpw-ios */,
 			);
@@ -427,20 +427,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "mpw-macos/mpw-macos.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "mpw-swift/mpw-swift.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "mpw-macos/Info.plist";
+				INFOPLIST_FILE = "mpw-swift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path/../PlugIns",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.csett86.mpw-macos";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.csett86.mpw-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -452,20 +452,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "mpw-macos/mpw-macos.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "mpw-swift/mpw-swift.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "mpw-macos/Info.plist";
+				INFOPLIST_FILE = "mpw-swift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path/../PlugIns",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.csett86.mpw-macos";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.csett86.mpw-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -492,7 +492,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.csett86.mpw-ios.CredentialProviderExtension";
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = "com.csett86.mpw-macos.CredentialProviderExtension";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = "com.csett86.mpw-swift.CredentialProviderExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -521,7 +521,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.csett86.mpw-ios.CredentialProviderExtension";
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = "com.csett86.mpw-macos.CredentialProviderExtension";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = "com.csett86.mpw-swift.CredentialProviderExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -588,7 +588,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A00100090000000000000001 /* Build configuration list for PBXNativeTarget "mpw-macos" */ = {
+		A00100090000000000000001 /* Build configuration list for PBXNativeTarget "mpw-swift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A00100120000000000000003 /* Debug */,
@@ -606,7 +606,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A00100090000000000000003 /* Build configuration list for PBXProject "mpw-macos" */ = {
+		A00100090000000000000003 /* Build configuration list for PBXProject "mpw-swift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A00100120000000000000001 /* Debug */,

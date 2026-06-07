@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A00100050000000000000001"
-               BuildableName = "mpw-macos.app"
-               BlueprintName = "mpw-macos"
-               ReferencedContainer = "container:mpw-macos.xcodeproj">
+               BlueprintIdentifier = "A00100050000000000000003"
+               BuildableName = "mpw-ios.app"
+               BlueprintName = "mpw-ios"
+               ReferencedContainer = "container:mpw-swift.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -44,10 +44,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A00100050000000000000001"
-            BuildableName = "mpw-macos.app"
-            BlueprintName = "mpw-macos"
-            ReferencedContainer = "container:mpw-macos.xcodeproj">
+            BlueprintIdentifier = "A00100050000000000000003"
+            BuildableName = "mpw-ios.app"
+            BlueprintName = "mpw-ios"
+            ReferencedContainer = "container:mpw-swift.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -61,10 +61,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A00100050000000000000001"
-            BuildableName = "mpw-macos.app"
-            BlueprintName = "mpw-macos"
-            ReferencedContainer = "container:mpw-macos.xcodeproj">
+            BlueprintIdentifier = "A00100050000000000000003"
+            BuildableName = "mpw-ios.app"
+            BlueprintName = "mpw-ios"
+            ReferencedContainer = "container:mpw-swift.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
