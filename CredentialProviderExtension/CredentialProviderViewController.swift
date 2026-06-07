@@ -228,19 +228,16 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
     }()
 
     private lazy var continueButton: UIButton = {
-        var button: UIButton
+        var config: UIButton.Configuration
         if #available(iOS 26, *) {
-            var config = UIButton.Configuration.prominentGlass()
-            config.image = UIImage(systemName: "checkmark")
-            config.buttonSize = .large
-            button = UIButton(configuration: config, primaryAction: nil)
+            config = UIButton.Configuration.prominentGlass()
         } else {
-            var config = UIButton.Configuration.tinted()
-            config.image = UIImage(systemName: "checkmark")
+            config = UIButton.Configuration.tinted()
             config.cornerStyle = .capsule
-            config.buttonSize = .large
-            button = UIButton(configuration: config, primaryAction: nil)
         }
+        config.image = UIImage(systemName: "checkmark")
+        config.buttonSize = .large
+        let button = UIButton(configuration: config, primaryAction: nil)
         button.addTarget(self, action: #selector(completeWithCredential), for: .touchUpInside)
         return button
     }()
@@ -250,10 +247,10 @@ final class CredentialProviderViewController: ASCredentialProviderViewController
         if #available(iOS 26, *) {
             config = UIButton.Configuration.glass()
         } else {
-            config = UIButton.Configuration.bordered()
+            config = UIButton.Configuration.tinted()
+            config.cornerStyle = .capsule
         }
         config.image = UIImage(systemName: "xmark")
-        config.cornerStyle = .capsule
         config.buttonSize = .large
         let button = UIButton(configuration: config, primaryAction: nil)
         button.addTarget(self, action: #selector(cancelCredentialRequest), for: .touchUpInside)
