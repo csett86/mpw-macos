@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A00100050000000000000001"
-               BuildableName = "mpw-swift.app"
+               BuildableName = "Master Password.app"
                BlueprintName = "mpw-swift"
                ReferencedContainer = "container:mpw-swift.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A00100050000000000000001"
-            BuildableName = "mpw-swift.app"
+            BuildableName = "Master Password.app"
             BlueprintName = "mpw-swift"
             ReferencedContainer = "container:mpw-swift.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A00100050000000000000001"
-            BuildableName = "mpw-swift.app"
+            BuildableName = "Master Password.app"
             BlueprintName = "mpw-swift"
             ReferencedContainer = "container:mpw-swift.xcodeproj">
          </BuildableReference>
