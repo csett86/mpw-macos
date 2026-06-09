@@ -6,7 +6,7 @@ The awesome [Master Password algorithm](https://spectre.app/spectre-algorithm.pd
 
 ## Download
 
-Download the latest release: [Master Password.app.zip](https://github.com/csett86/mpw-swift/releases/latest/download/Master.Password.app.zip)
+Download the latest release for macOS: [Master Password.app.zip](https://github.com/csett86/mpw-swift/releases/latest/download/Master.Password.app.zip)
 
 ## Project contents
 
