@@ -19,11 +19,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-    - run: xcodebuild -scheme mpw-swift -configuration Release
+    - run: xcodebuild -scheme mpw-swift -configuration Debug CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
 
   build-ios:
       runs-on: macos-latest
 
       steps:
       - uses: actions/checkout@v6
-      - run: xcodebuild -scheme mpw-ios -configuration Release
+      - run: xcodebuild -scheme mpw-ios -configuration Debug CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
